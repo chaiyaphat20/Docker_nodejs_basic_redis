@@ -1,0 +1,58 @@
+version: "3"
+
+services: 
+  backend:
+    build: .
+    ports: 
+      - 3000:3000
+    depends_on: 
+      - postgres
+    external_links: 
+      - redis
+    environment: 
+      PGHOST: postgres
+      PGUSER: admin
+      PGPASSWORD: 123456
+      PGDATABASE: basic101
+      REDIS_URI: redis
+    networks: 
+      - shared
+
+  postgres:
+    image: postgres
+    command: postgres -c 'max_connections=300'
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: basic101
+    volumes: 
+      - ./data/pd:/var/lib/postgresql/data
+    networks: 
+      - shared
+    
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks: 
+      - shared
+
+networks: 
+  shared:
+    external: 
+      name: shared
+
+
+
+
+#สร้าง image ชื่อ <folder_project> + <service_name> = basic_docker + basic-docker-web = basic_docker_basic-docker-web
+#สร้าง container ให้เอง และรันให้ด้วย
+
+#คำสั่ง รัน 
+# $docker-compose up -d  **-d ย่อมาจาก --detach Run container in background and print container ID
+
+#คำสั่ง stop
+#1. $ docker stop <comtainer id>
+#2. $ docker-compose down **มันจะเปิดและ remove container ให้
